@@ -17,9 +17,8 @@ public class WeatherService {
 
     private static final String OPEN_WEATHER_MAP_API_KEY = "7d97458ed13bf2d4e4922317047e6172";
 
-    private static final String OPEN_WEATHER_MAP_API_URL = "https://api.openweathermap.org/data/2.5/weather";
-
-    private static RestClient restClient = RestClient.builder().baseUrl(OPEN_WEATHER_MAP_API_URL).build();
+    @Autowired
+    private RestClient restClient;
 
     @Autowired
     private WeatherRepo weatherRepo;
@@ -55,18 +54,19 @@ public class WeatherService {
 
     /**
      * Saves the weather description to the database
+     *
      * @param citySignature
      * @param description
      * @return
      */
-    private Weather saveWeather(String citySignature, String description) {
+    Weather saveWeather(String citySignature, String description) {
         return weatherRepo.save(new Weather(citySignature, description));
     }
 
     /*
      * Extracts the description from the full weather JSON string
      */
-    private String extractDescription(String fullWeatherJSON) {
+    String extractDescription(String fullWeatherJSON) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             JsonNode jsonNode = mapper.readTree(fullWeatherJSON);

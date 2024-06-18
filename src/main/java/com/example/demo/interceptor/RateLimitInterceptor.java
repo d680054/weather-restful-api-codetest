@@ -14,11 +14,22 @@ import java.util.concurrent.TimeUnit;
 public class RateLimitInterceptor implements HandlerInterceptor {
 
     private static Map<String, Integer> apiUsage = ExpiringMap.builder()
-			.expiration(1, TimeUnit.MINUTES)
+			.expiration(1, TimeUnit.HOURS)
 			.build();
 
     private final int MAX_REQUESTS_PER_HOUR = 5;
 
+    /**
+     * check the api_key first, if not valid, return 401
+     * check the api usage, if exceed the limit, return 429
+     * otherwise, allow the request
+     *
+     * @param request
+     * @param response
+     * @param handler
+     * @return
+     * @throws Exception
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String apiKey = request.getHeader("api_key");
@@ -50,5 +61,13 @@ public class RateLimitInterceptor implements HandlerInterceptor {
                DemoConfig.API_KEY_3.equals(apiKey) ||
                DemoConfig.API_KEY_4.equals(apiKey) ||
                DemoConfig.API_KEY_5.equals(apiKey);
+    }
+
+    /**
+     * TODO: for unit test, should be refactored or removed
+     * @return
+     */
+    static Map<String, Integer> getApiUsage() {
+        return apiUsage;
     }
 }
